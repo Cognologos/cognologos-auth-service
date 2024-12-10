@@ -1,4 +1,4 @@
-from .abc import AbstractException, ConflictException, NotFoundException
+from .abc import AbstractException, ConflictException, NotFoundException, UnauthorizedException
 
 
 class UserException(AbstractException):
@@ -9,6 +9,12 @@ class UserNotFoundException(UserException, NotFoundException):
     """User not found."""
 
     detail = "User not found"
+
+
+class UserUnauthorizedException(UserException, UnauthorizedException):
+    """User unauthorized"""
+
+    detail = "User unauthorized"
 
 
 class UserDeletedException(UserException, ConflictException):

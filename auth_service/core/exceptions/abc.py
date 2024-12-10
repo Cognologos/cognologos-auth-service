@@ -100,7 +100,10 @@ class AbstractException(ApiException, metaclass=ABCMeta):
             try:
                 self.current_detail = self.current_detail.format_map(kwargs)
             except KeyError:
-                logger.exception("Failed to format detail from kwargs. (reqid: %s)", self.current_request_id)
+                logger.exception(
+                    "Failed to format detail from kwargs. (reqid: %s)",
+                    self.current_request_id,
+                )
         # Add additional info fields from kwargs
         if kwargs and self.auto_additional_info_fields:
             for field in self.auto_additional_info_fields:
@@ -128,7 +131,11 @@ class AbstractException(ApiException, metaclass=ABCMeta):
                 "is_public",
                 "additional_info",
             ]:
-                logger.warning("Exception attribute set %s is ignored. (reqid: %s)", key, self.current_request_id)
+                logger.warning(
+                    "Exception attribute set %s is ignored. (reqid: %s)",
+                    key,
+                    self.current_request_id,
+                )
                 continue
             setattr(self, key, value)
         # Log exception to the console.

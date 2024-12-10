@@ -19,5 +19,6 @@ class UserLoginSchema(BaseSchema):
 
 class UserSchema(BaseUserSchema):
     id: int
+    hashed_password: str
     is_active: bool
     created_at: datetime
