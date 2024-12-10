@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "cognologos-auth-service"
+version = "0.1.0"
+description = ""
+authors = ["Arthur <baginian.artur@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.6"
+sqlalchemy = "^2.0.36"
+pydantic = "^2.10.3"
+python-multipart = "^0.0.19"
+pyjwt = "^2.10.1"
+cryptography = "^44.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.13.2"
+black = "^24.10.0"
+flake8 = "^7.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
