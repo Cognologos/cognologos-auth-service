@@ -4,6 +4,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
+from auth_service.core.config import AppConfig
+from auth_service.core.security import Encryptor
+
 
 def db_engine(database_url: str) -> AsyncEngine:
     return create_async_engine(database_url, isolation_level="SERIALIZABLE")
@@ -42,3 +45,15 @@ async def db_session_autocommit(
         await session.commit()
     finally:
         await session.close()
+
+
+def app_config() -> AppConfig:
+    return AppConfig.from_env()
+
+
+def encryptor(config: AppConfig) -> Encryptor:
+    return Encryptor(
+        secret_key=config.security.secret_key,
+        jwt_algorithm=config.jwt.algorithm,
+        expire_minutes=config.jwt.access_token_expire_minutes,
+    )

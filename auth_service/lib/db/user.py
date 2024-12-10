@@ -1,10 +1,9 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-
 from core.exceptions.user import UserNotFoundException
 from core.security import Encryptor
 from lib.models.user import UserModel
 from lib.schemas.user import UserCreateSchema, UserSchema
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 
 async def create_user(

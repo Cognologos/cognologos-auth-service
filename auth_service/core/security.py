@@ -49,7 +49,9 @@ class Encryptor:
     @staticmethod
     def hash_password(password: str, *, digest_size: int = 64) -> str:
         return Encryptor.hash_text(
-            password, digest_size=digest_size, salt=Encryptor.hash_text(password[::2], digest_size=8)
+            password,
+            digest_size=digest_size,
+            salt=Encryptor.hash_text(password[::2], digest_size=8),
         )
 
     def __get_encryption_key(self, key: str) -> bytes:
