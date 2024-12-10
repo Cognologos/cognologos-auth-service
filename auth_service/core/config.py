@@ -31,6 +31,7 @@ class SecurityConfig(BaseSettings):
 class JWTConfig(BaseSettings):
     algorithm: str = Field(default="HS256")
     access_token_expire_minutes: int = Field(default=30)
+    refresh_token_expire_days: int = Field(default=30)
 
 
 class DatabaseConfig(BaseSettings):
