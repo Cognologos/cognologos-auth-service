@@ -1,8 +1,9 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 
 from auth_service.core.dependencies.fastapi import DatabaseDependency, EncryptorDependency
+from auth_service.core.exceptions.user import UserUnauthorizedException
 from auth_service.lib.db import user as users_db
 from auth_service.lib.schemas.token import TokenInfo
 from auth_service.lib.schemas.user import UserLoginSchema, UserSchema
@@ -17,9 +18,9 @@ async def validate_user(
     user_login: UserLoginSchema,
 ) -> UserSchema:
     if not (user := await users_db.get_user_by_username(db, username=user_login.username)):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        raise UserUnauthorizedException
     if encryptor.hash_password(user_login.password) != user.hashed_password:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        raise UserUnauthorizedException
     return user
 
 
