@@ -14,6 +14,10 @@ def db_session_maker_stub() -> sessionmaker[Any]:
     raise NotImplementedError
 
 
+def app_config_stub() -> AppConfig:
+    raise NotImplementedError
+
+
 async def db_session(
     request: Request,
     maker: Annotated[sessionmaker[Any], Depends(db_session_maker_stub)],
