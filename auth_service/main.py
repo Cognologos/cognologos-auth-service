@@ -1,10 +1,12 @@
 from contextlib import asynccontextmanager, contextmanager
 from typing import AsyncGenerator
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 
 from auth_service.core.config import AppConfig
 from auth_service.core.dependencies import constructors as app_depends, fastapi as stubs
+from auth_service.core.exceptions.abc import AbstractException
 from auth_service.routers import router
 
 
@@ -21,5 +23,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 app = FastAPI(
     lifespan=lifespan,
 )
+
+
+@app.exception_handler(AbstractException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(status_code=exc.status_code, content={"error": True, "message": exc.detail})
+
 
 app.include_router(router)

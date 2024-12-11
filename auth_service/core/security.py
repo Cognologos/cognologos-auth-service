@@ -10,14 +10,19 @@ from jwt import decode as jwt_decode, encode as jwt_encode
 class Encryptor:
     """Encryptor class for handling encryption, decryption, JWT encoding/decoding, and hashing."""
 
-    def __init__(self, secret_key: str, jwt_algorithm: str, expire_minutes: int = 15):
+    def __init__(self, secret_key: str, jwt_algorithm: str, expire_minutes: int = 15, refresh_expire_days: int = 30):
         self.__secret_key = secret_key
         self.__jwt_algorithm = jwt_algorithm
         self.__expire_minutes = expire_minutes
+        self.__refresh_expire_days = refresh_expire_days
 
     @property
     def jwt_expire_minutes(self) -> int:
         return self.__expire_minutes
+
+    @property
+    def jwt_refresh_expire_days(self) -> int:
+        return self.__refresh_expire_days
 
     def encrypt_text(self, text: str, key: str = "") -> str:
         return Fernet(self.__get_encryption_key(key)).encrypt(text.encode()).decode()
@@ -28,8 +33,20 @@ class Encryptor:
     def encode_jwt(self, data: Any, expires_in: int | None = None) -> str:
         return jwt_encode(
             {
+                "type": "access",
                 "sub": str(data),
                 "exp": datetime.now(timezone.utc) + timedelta(minutes=expires_in or self.__expire_minutes),
+            },
+            self.__secret_key,
+            algorithm=self.__jwt_algorithm,
+        )
+
+    def encode_refresh_jwt(self, data: Any, expires_in_days: int | None = None) -> str:
+        return jwt_encode(
+            {
+                "type": "refresh",
+                "sub": str(data),
+                "exp": datetime.now(timezone.utc) + timedelta(days=expires_in_days or self.__refresh_expire_days),
             },
             self.__secret_key,
             algorithm=self.__jwt_algorithm,

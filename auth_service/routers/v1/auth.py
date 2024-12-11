@@ -17,8 +17,7 @@ async def validate_user(
     encryptor: EncryptorDependency,
     user_login: UserLoginSchema,
 ) -> UserSchema:
-    if not (user := await users_db.get_user_by_username(db, username=user_login.username)):
-        raise UserUnauthorizedException
+    user = await users_db.get_user_by_username(db, username=user_login.username)
     if encryptor.hash_password(user_login.password) != user.hashed_password:
         raise UserUnauthorizedException
     return user
@@ -29,5 +28,9 @@ async def login_user(
     user: Annotated[UserLoginSchema, Depends(validate_user)],
     encryptor: EncryptorDependency,
 ) -> TokenInfo:
-    payload = encryptor.encode_jwt(user.username)
-    return TokenInfo(access_token=payload)
+    access_token = encryptor.encode_jwt(user.username)
+    refresh_token = encryptor.encode_refresh_jwt(user.username)
+    return TokenInfo(
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
