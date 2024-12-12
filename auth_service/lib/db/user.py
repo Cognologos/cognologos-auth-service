@@ -36,25 +36,16 @@ async def create_user(
     return UserSchema.model_construct(**user_model.to_dict())
 
 
-async def get_user_model_by_username(
+async def get_user_model(
     db: AsyncSession,
     *,
-    username: str,
+    email: str,
 ) -> UserModel:
-    query = select(UserModel).where(UserModel.username == username)
+    query = select(UserModel).where(UserModel.email == email)
     result = (await db.execute(query)).scalar_one_or_none()
     if result is None:
         raise UserNotFoundException
     return result
-
-
-async def get_user_by_username(
-    db: AsyncSession,
-    *,
-    username: str,
-) -> UserSchema:
-    user_model = await get_user_model_by_username(db, username=username)
-    return UserSchema.model_construct(**user_model.to_dict())
 
 
 async def get_user_model_by_id(
@@ -67,15 +58,6 @@ async def get_user_model_by_id(
     if result is None:
         raise UserNotFoundException
     return result
-
-
-async def get_user_by_id(
-    db: AsyncSession,
-    *,
-    user_id: int,
-) -> UserSchema:
-    user_model = await get_user_model_by_id(db, user_id=user_id)
-    return UserSchema.model_construct(**user_model.to_dict())
 
 
 async def delete_user(
