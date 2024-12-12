@@ -76,9 +76,8 @@ async def delete_user(
     db: AsyncSession,
     *,
     user_id: int,
-) -> UserSchema:
+) -> None:
     user_model = await get_user_model_by_id(db, user_id=user_id)
     user_model.deleted_at = datetime.now(timezone.utc)
 
     await db.flush()
-    return UserSchema(**user_model.to_dict())
