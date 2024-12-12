@@ -33,20 +33,8 @@ class Encryptor:
     def encode_jwt(self, data: Any, expires_in: int | None = None) -> str:
         return jwt_encode(
             {
-                "type": "access",
                 "sub": str(data),
                 "exp": datetime.now(timezone.utc) + timedelta(minutes=expires_in or self.__expire_minutes),
-            },
-            self.__secret_key,
-            algorithm=self.__jwt_algorithm,
-        )
-
-    def encode_refresh_jwt(self, data: Any, expires_in_days: int | None = None) -> str:
-        return jwt_encode(
-            {
-                "type": "refresh",
-                "sub": str(data),
-                "exp": datetime.now(timezone.utc) + timedelta(days=expires_in_days or self.__refresh_expire_days),
             },
             self.__secret_key,
             algorithm=self.__jwt_algorithm,
