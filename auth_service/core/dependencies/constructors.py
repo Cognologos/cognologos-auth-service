@@ -1,5 +1,6 @@
 from typing import Any, AsyncGenerator, Generator
 
+from redis.asyncio import ConnectionPool, Redis
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -57,3 +58,17 @@ def encryptor(config: AppConfig) -> Encryptor:
         jwt_algorithm=config.jwt.algorithm,
         expire_minutes=config.jwt.access_token_expire_minutes,
     )
+
+
+async def redis_pool(redis_url: str) -> AsyncGenerator[ConnectionPool, None]:
+    pool = ConnectionPool.from_url(redis_url)
+    yield pool
+    await pool.aclose()
+
+
+async def redis_conn(pool: ConnectionPool) -> AsyncGenerator[Redis, None]:
+    conn = Redis(connection_pool=pool)
+    try:
+        yield conn
+    finally:
+        await conn.aclose()

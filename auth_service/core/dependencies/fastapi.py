@@ -1,6 +1,7 @@
 from typing import Annotated, Any, AsyncGenerator
 
 from fastapi import Depends, Request
+from redis.asyncio import ConnectionPool, Redis as AbstractRedis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
@@ -36,9 +37,48 @@ async def db_session(
         raise RuntimeError("Database session not closed (db dependency generator is not closed).")
 
 
+def redis_conn_pool_stub() -> ConnectionPool:
+    """Get Redis connection pool stub.
+
+    Raises:
+        NotImplementedError: This is a stub function and should be implemented.
+
+    Returns:
+        ConnectionPool: The Redis connection pool.
+    """
+    raise NotImplementedError
+
+
+async def redis_conn(
+    request: Request, conn_pool: Annotated[ConnectionPool, Depends(redis_conn_pool_stub)]
+) -> AsyncGenerator[AbstractRedis, None]:
+    """Get Redis connection.
+
+    Args:
+        request (Request): The FastAPI request object.
+        conn_pool (ConnectionPool): The Redis connection pool.
+
+    Yields:
+        AsyncGenerator[AbstractRedis, None]: A Redis connection.
+    """
+    generator = app_depends.redis_conn(conn_pool)
+    redis = await anext(generator)
+    request.state.redis = redis
+
+    yield redis
+
+    try:
+        await anext(generator)
+    except StopAsyncIteration:
+        pass
+    else:
+        raise RuntimeError("Redis session not closed (redis dependency generator is not closed).")
+
+
 def encryptor(config: Annotated[AppConfig, Depends(app_depends.app_config)]) -> Encryptor:
     return app_depends.encryptor(config)
 
 
-DatabaseDependency = Annotated[AsyncSession, Depends(db_session)]
 EncryptorDependency = Annotated[Encryptor, Depends(encryptor)]
+DatabaseDependency = Annotated[AsyncSession, Depends(db_session)]
+RedisDependency = Annotated[AbstractRedis, Depends(redis_conn)]
