@@ -1,12 +1,18 @@
+from json import loads as json_loads
 from typing import Any, AsyncGenerator, Generator
+from uuid import UUID
 
+from jwt import InvalidTokenError
 from redis.asyncio import ConnectionPool, Redis
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from auth_service.core.config import AppConfig
+from auth_service.core.exceptions.abc import UnauthorizedException
 from auth_service.core.security import Encryptor
+from auth_service.lib.schemas.auth import TokenRedisData
+from auth_service.lib.schemas.enums.redis import AuthRedisKeyType
 
 
 def db_engine(database_url: str) -> AsyncEngine:
@@ -72,3 +78,29 @@ async def redis_conn(pool: ConnectionPool) -> AsyncGenerator[Redis, None]:
         yield conn
     finally:
         await conn.aclose()
+
+
+async def get_token_data(encryptor: Encryptor, redis: Redis, token: str) -> TokenRedisData:
+    payload = _decode_jwt(encryptor, token)
+    str_data = await redis.get(AuthRedisKeyType.access.format(payload.get("sub")))
+
+    if str_data is None:
+        raise UnauthorizedException(detail_="Invalid token")
+
+    return TokenRedisData.model_construct(**json_loads(str_data))
+
+
+def get_refresh_token(encryptor: Encryptor, token: str) -> UUID:
+    payload = _decode_jwt(encryptor, token)
+
+    try:
+        return UUID(payload.get("sub"))
+    except (ValueError, TypeError, AttributeError):
+        raise UnauthorizedException(detail_="Invalid refresh token")
+
+
+def _decode_jwt(encryptor: Encryptor, token: str) -> dict[str, Any]:
+    try:
+        return encryptor.decode_jwt(token)
+    except InvalidTokenError:
+        raise UnauthorizedException(detail_="Invalid token")
