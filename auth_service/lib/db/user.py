@@ -60,6 +60,18 @@ async def get_user_model_by_id(
     return result
 
 
+async def get_user(
+    db: AsyncSession,
+    *,
+    user_id: int,
+) -> UserSchema:
+    query = select(UserModel).where(UserModel.id == user_id)
+    user_model = (await db.execute(query)).scalar_one_or_none()
+    if user_model is None:
+        raise UserNotFoundException
+    return UserSchema.model_construct(**user_model.to_dict())
+
+
 async def delete_user(
     db: AsyncSession,
     *,

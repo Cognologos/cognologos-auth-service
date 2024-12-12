@@ -18,4 +18,4 @@ async def create_user(db: DatabaseDependency, schema: UserCreateSchema):
 
 @router.get("/{user_id}", response_model=UserSchema)
 async def get_user(db: DatabaseDependency, user_id: int):
-    return await user_db.get_user_by_id(db, user_id=user_id)
+    return await user_db.get_user(db, user_id=user_id)
