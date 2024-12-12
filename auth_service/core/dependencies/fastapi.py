@@ -1,6 +1,6 @@
 from typing import Annotated, Any, AsyncGenerator
 
-from fastapi import Depends, Request
+from fastapi import Depends, Header, Request
 from redis.asyncio import ConnectionPool, Redis as AbstractRedis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
@@ -79,6 +79,13 @@ def encryptor(config: Annotated[AppConfig, Depends(app_depends.app_config)]) -> 
     return app_depends.encryptor(config)
 
 
+def get_client_host(request: Request) -> str:
+    client = request.client
+    return client.host if client else ""
+
+
+ClientHostDependency = Annotated[str, Depends(get_client_host)]
+UserAgentDependency = Annotated[str, Header()]
 EncryptorDependency = Annotated[Encryptor, Depends(encryptor)]
 DatabaseDependency = Annotated[AsyncSession, Depends(db_session)]
 RedisDependency = Annotated[AbstractRedis, Depends(redis_conn)]
