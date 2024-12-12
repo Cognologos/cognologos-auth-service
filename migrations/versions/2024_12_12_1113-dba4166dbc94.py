@@ -1,4 +1,4 @@
-"""Init auth_session table + change users table
+"""Change users table
 
 Revision ID: dba4166dbc94
 Revises: 6279e792099d

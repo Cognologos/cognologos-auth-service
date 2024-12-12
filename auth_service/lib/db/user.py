@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from auth_service.core.exceptions.user import UserEmailAlreadyExistsException, UserNotFoundException
 from auth_service.core.security import Encryptor
-from auth_service.lib.models.user import UserModel
+from auth_service.lib.models import UserModel
 from auth_service.lib.schemas.user import UserCreateSchema, UserSchema
 
 
