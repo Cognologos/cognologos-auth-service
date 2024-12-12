@@ -10,8 +10,8 @@ class UserModel(AbstractModel):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column("id", Integer(), primary_key=True, autoincrement=True)
-    username: Mapped[str] = mapped_column(unique=True)
-    email: Mapped[str] = mapped_column(unique=True)
+    username: Mapped[str] = mapped_column(index=True)
+    email: Mapped[str] = mapped_column(index=True)
     hashed_password: Mapped[str]
     is_active: Mapped[bool] = mapped_column(default=True)
     created_at: Mapped[datetime] = mapped_column(
