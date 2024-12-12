@@ -1,3 +1,4 @@
+from secrets import compare_digest
 from uuid import UUID, uuid4
 
 from redis.asyncio import Redis
@@ -11,8 +12,8 @@ from auth_service.lib.schemas.auth import TokenCreateSchema, TokenRedisData, Tok
 from auth_service.lib.schemas.enums.redis import AuthRedisKeyType
 
 
-def raise_user_password(password: str, password_hash: str) -> None:
-    if Encryptor.hash_password(password) != password_hash:
+def raise_user_password(password: str, hashed_password: str) -> None:
+    if not compare_digest(password, hashed_password):
         raise BadAuthDataException
 
 
