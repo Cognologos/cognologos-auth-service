@@ -12,8 +12,9 @@ from auth_service.lib.schemas.auth import TokenCreateSchema, TokenRedisData, Tok
 from auth_service.lib.schemas.enums.redis import AuthRedisKeyType
 
 
-def raise_user_password(password: str, hashed_password: str) -> None:
-    if not compare_digest(password, hashed_password):
+def raise_user_password(password: str, password_hash: str) -> None:
+    hashed_password = Encryptor.hash_password(password)
+    if not compare_digest(hashed_password, password_hash):
         raise BadAuthDataException
 
 
