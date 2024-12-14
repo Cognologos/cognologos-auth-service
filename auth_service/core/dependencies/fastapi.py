@@ -41,29 +41,12 @@ async def db_session(
 
 
 def redis_conn_pool_stub() -> ConnectionPool:
-    """Get Redis connection pool stub.
-
-    Raises:
-        NotImplementedError: This is a stub function and should be implemented.
-
-    Returns:
-        ConnectionPool: The Redis connection pool.
-    """
     raise NotImplementedError
 
 
 async def redis_conn(
     request: Request, conn_pool: Annotated[ConnectionPool, Depends(redis_conn_pool_stub)]
 ) -> AsyncGenerator[AbstractRedis, None]:
-    """Get Redis connection.
-
-    Args:
-        request (Request): The FastAPI request object.
-        conn_pool (ConnectionPool): The Redis connection pool.
-
-    Yields:
-        AsyncGenerator[AbstractRedis, None]: A Redis connection.
-    """
     generator = app_depends.redis_conn(conn_pool)
     redis = await anext(generator)
     request.state.redis = redis
