@@ -38,7 +38,12 @@ class DatabaseConfig(BaseSettings):
     url: str
 
 
+class RedisConfig(BaseSettings):
+    url: str
+
+
 class AppConfig(BaseConfig):
     security: SecurityConfig
     jwt: JWTConfig
     database: DatabaseConfig
+    redis: RedisConfig
