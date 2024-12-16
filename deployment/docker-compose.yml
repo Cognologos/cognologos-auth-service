@@ -58,7 +58,7 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
 
     healthcheck: &service_healthcheck
-      test: ["CMD", "pg_isready"]
+      test: ["CMD", "pg_isready", "-U", "user", "-d", "db"]
       interval: 5s
       timeout: 5s
       retries: 5
