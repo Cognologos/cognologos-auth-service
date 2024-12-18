@@ -33,9 +33,7 @@ services:
 
     env_file: *app_env_file
 
-    environment:
-      <<: *app_environment
-      MODE: migrations
+    command: alembic upgrade head
 
     healthcheck:
       disable: true
